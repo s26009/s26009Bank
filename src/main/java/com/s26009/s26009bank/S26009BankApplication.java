@@ -17,6 +17,10 @@ public class S26009BankApplication {
         System.out.println(transaction);
         BankAccount bankAccountInfo = bankService.getBankAccountInfo("hleb");
         System.out.println(bankAccountInfo);
+        Transaction transaction2 = bankService.makeNewTransaction("hleb", -300);
+        System.out.println(transaction2);
+        BankAccount bankAccountInfo2 = bankService.getBankAccountInfo("hleb");
+        System.out.println(bankAccountInfo2);
     }
 
     public static void main(String[] args) {

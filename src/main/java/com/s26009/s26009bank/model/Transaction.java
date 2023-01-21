@@ -18,6 +18,6 @@ public class Transaction {
 
     @Override
     public String toString() {
-        return "from" + bankAccount + " " + amount + " result: " + type;
+        return "Transaction: from " + bankAccount + " " + amount + ", result: " + type;
     }
 }

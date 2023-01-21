@@ -23,6 +23,6 @@ public class BankAccount {
 
     @Override
     public String toString() {
-        return "accId=" + accId + ", saldo=" + saldo;
+        return "BankAccount: accId=" + accId + ", saldo=" + saldo;
     }
 }

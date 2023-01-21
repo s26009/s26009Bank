@@ -39,7 +39,7 @@ public class BankService {
         if (bankAccountOptional.isPresent()) {
             Transaction newTransaction = new Transaction(bankAccountOptional.get(), amount);
             transactionStorage.addNewTransaction(newTransaction);
-            System.out.println("Transaction for '" + accId + " is added to storage.");
+            System.out.println("Transaction for '" + accId + "' is added to storage.");
             return newTransaction;
         } else {
             System.out.println("User ID doesn't exist.");
