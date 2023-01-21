@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class BankServiceTest {
 
-   private BankService bankService;
+    private BankService bankService;
 
     @BeforeEach
     void setup() {
