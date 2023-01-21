@@ -12,8 +12,7 @@ public class S26009BankApplication {
 
     public S26009BankApplication(BankService bankService) {
 
-        BankAccount newBankAccount = bankService.registerNewBankAccount("hleb", 500);
-        System.out.println(newBankAccount);
+        bankService.registerNewBankAccount("hleb", 500);
         Transaction transaction = bankService.makeNewTransaction("hleb", -300);
         System.out.println(transaction);
         BankAccount bankAccountInfo = bankService.getBankAccountInfo("hleb");

@@ -16,6 +16,7 @@ public class TransactionStorage {
         transactionList.add(new Transaction(new BankAccount("user1", 10000), 500));
         transactionList.add(new Transaction(new BankAccount("user2", 20000), 720));
     }
+
     public void addNewTransaction(Transaction transaction) {
         transactionList.add(transaction);
     }

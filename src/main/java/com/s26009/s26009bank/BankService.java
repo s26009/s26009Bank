@@ -19,16 +19,36 @@ public class BankService {
         this.transactionStorage = transactionStorage;
     }
 
-    public BankAccount registerNewBankAccount(String accId, int amount) {
-        return null;
+    public void registerNewBankAccount(String accId, int amount) {
+        Optional<BankAccount> bankAccountOptional = findBankAccountByAccId(accId);
+        if (bankAccountOptional.isEmpty()) {
+            BankAccount newBankAccount = new BankAccount(accId, amount);
+            bankAccountStorage.addNewBankAccount(newBankAccount);
+            System.out.println("User '" + accId + " is added to storage.");
+        } else {
+            System.out.println("User ID is already used.");
+        }
+    }
+
+    public Optional<BankAccount> findBankAccountByAccId(String accId) {
+        return bankAccountStorage.findBankAccountByAccId(accId);
     }
 
     public Transaction makeNewTransaction(String accId, int amount) {
-        return null;
+        Optional<BankAccount> bankAccountOptional = findBankAccountByAccId(accId);
+        if (bankAccountOptional.isPresent()) {
+            Transaction newTransaction = new Transaction(bankAccountOptional.get(), amount);
+            transactionStorage.addNewTransaction(newTransaction);
+            System.out.println("Transaction for '" + accId + " is added to storage.");
+            return newTransaction;
+        } else {
+            System.out.println("User ID doesn't exist.");
+            return null;
+        }
     }
 
     public BankAccount getBankAccountInfo(String accId) {
-        return null;
+        return bankAccountStorage.findBankAccountByAccId(accId).orElse(null);
     }
 
     public List<BankAccount> getAllBankAccounts() {
