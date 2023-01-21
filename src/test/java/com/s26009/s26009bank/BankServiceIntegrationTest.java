@@ -1,12 +1,22 @@
 package com.s26009.s26009bank;
 
+import com.s26009.s26009bank.model.BankAccount;
+import com.s26009.s26009bank.model.Transaction;
 import com.s26009.s26009bank.storage.BankAccountStorage;
 import com.s26009.s26009bank.storage.TransactionStorage;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 public class BankServiceIntegrationTest {
@@ -17,82 +27,120 @@ public class BankServiceIntegrationTest {
     @MockBean
     private TransactionStorage transactionStorage;
 
-//    @Autowired
-//    private CarService carService;
+    @Autowired
+    private BankService bankService;
 
-//    @Test
-//    void successPremiumCarRent() {
-//        //given
-//        Car car = new Car("", "", "", CarType.PREMIUM);
-//        when(carStorage.findCarByVin(any())).thenReturn(Optional.of(car));
-//        when(rentalStorage.isCarRented(any())).thenReturn(false);
-//        //when
-//        RentalInfo testRental = carService.rentCar(
-//                new BankAccount("1"), "4321",
-//                LocalDate.of(2022, 11, 23),
-//                LocalDate.of(2022, 11, 24)
-//        );
-//        //then
-//        assertThat(testRental.getPrice()).isEqualTo(450);
-//    }
-//
-//    @Test
-//    void successStandardCarRent() {
-//        //given
-//        Car car = new Car("", "", "", CarType.STANDARD);
-//        when(carStorage.findCarByVin(any())).thenReturn(Optional.of(car));
-//        when(rentalStorage.isCarRented(any())).thenReturn(false);
-//        //when
-//        RentalInfo testRental = carService.rentCar(
-//                new BankAccount("1"), "4321",
-//                LocalDate.of(2022, 11, 23),
-//                LocalDate.of(2022, 11, 24)
-//        );
-//        //then
-//        assertThat(testRental.getPrice()).isEqualTo(300);
-//    }
-//
-//    @Test
-//    void carDoesntExistInDataBase() {
-//        //given
-//        when(carStorage.findCarByVin(any())).thenReturn(Optional.empty());
-//        //when
-//        RentalInfo testRental = carService.rentCar(
-//                new BankAccount("1"), "randomVin",
-//                LocalDate.of(2022, 11, 23),
-//                LocalDate.of(2022, 11, 24)
-//        );
-//        //then
-//        assertThat(testRental).isNull();
-//    }
-//
-//    @Test
-//    void carIsCurrentlyRented() {
-//        //given
-//        when(carStorage.findCarByVin(any())).thenReturn(Optional.of(
-//                new Car("", "", "", CarType.PREMIUM)));
-//        when(rentalStorage.isCarRented(any())).thenReturn(true);
-//        //when
-//        RentalInfo testRental = carService.rentCar(
-//                new BankAccount("1"), "1234",
-//                LocalDate.of(2022, 11, 23),
-//                LocalDate.of(2022, 11, 24)
-//        );
-//        //then
-//        assertThat(testRental).isNull();
-//    }
-//
-//    @Test
-//    void givenEndDateIsBeforeStartDate() {
-//        //when
-//        RentalInfo testRental = carService.rentCar(
-//                new BankAccount("1"), "9876",
-//                LocalDate.of(2022, 11, 24),
-//                LocalDate.of(2022, 11, 23)
-//        );
-//        //then
-//        assertThat(testRental).isNull();
-//    }
+    @Test
+    void shouldSuccessfullyCreateNewBankAccount_whenAddNewBankAccount_givenUnusedAccountId() {
+        //given
+        String accId = "hleb";
+        Optional<BankAccount> bankAccountOptional = Optional.empty();
+        when(bankAccountStorage.findBankAccountByAccId(any())).thenReturn(bankAccountOptional);
 
+        //when
+        boolean result = bankService.registerNewBankAccount(accId, 500);
+
+        //then
+        verify(bankAccountStorage).findBankAccountByAccId(accId);
+        assertTrue(result);
+    }
+
+    @Test
+    void shouldFailCreatingNewBankAccount_whenAddNewBankAccount_givenUsedAccountId() {
+        //given
+        String accId = "user1";
+        Optional<BankAccount> bankAccountOptional = Optional.of(new BankAccount("user1", 500));
+        when(bankAccountStorage.findBankAccountByAccId(any())).thenReturn(bankAccountOptional);
+
+        //when
+        boolean result = bankService.registerNewBankAccount(accId, 500);
+
+        //then
+        verify(bankAccountStorage).findBankAccountByAccId(accId);
+        assertFalse(result);
+    }
+
+    @Test
+    void shouldSuccessfullyCreateNewAcceptedTransaction_whenMakeNewTransaction_givenAmountLessThanSaldo() {
+        //given
+        String accId = "user1";
+        BankAccount bankAccount = new BankAccount(accId, 10000);
+        Optional<BankAccount> bankAccountOptional = Optional.of(bankAccount);
+        Transaction expectedTransaction = new Transaction(bankAccount, 500);
+        when(bankAccountStorage.findBankAccountByAccId(any())).thenReturn(bankAccountOptional);
+
+        //when
+        Transaction result = bankService.makeNewTransaction(accId, 500);
+
+        //then
+        verify(bankAccountStorage).findBankAccountByAccId(accId);
+        assertThat(result).usingRecursiveComparison().isEqualTo(expectedTransaction);
+    }
+
+    @Test
+    void shouldSuccessfullyCreateNewDeclinedTransaction_whenMakeNewTransaction_givenAmountGreaterThanSaldo() {
+        //given
+        String accId = "user1";
+        BankAccount bankAccount = new BankAccount(accId, 10000);
+        Optional<BankAccount> bankAccountOptional = Optional.of(bankAccount);
+        Transaction expectedTransaction = new Transaction(bankAccount, 50000);
+        when(bankAccountStorage.findBankAccountByAccId(any())).thenReturn(bankAccountOptional);
+
+        //when
+        Transaction result = bankService.makeNewTransaction(accId, 50000);
+
+        //then
+        verify(bankAccountStorage).findBankAccountByAccId(accId);
+        assertThat(result).usingRecursiveComparison().isEqualTo(expectedTransaction);
+    }
+
+    @Test
+    void shouldFailCreatingNewTransaction_whenMakeNewTransaction_givenNonexistentAccountId() {
+        //given
+        String accId = "nonexistent";
+        Optional<BankAccount> bankAccountOptional = Optional.empty();
+        when(bankAccountStorage.findBankAccountByAccId(any())).thenReturn(bankAccountOptional);
+
+        //when
+        Transaction result = bankService.makeNewTransaction(accId, 5000);
+
+        //then
+        verify(bankAccountStorage).findBankAccountByAccId(accId);
+        assertThat(result).isNull();
+    }
+
+    @Test
+    void shouldReturnBankAccountInfo_whenGetBankAccountInfo_givenExistingAccountId() {
+        //given
+        String accId = "user1";
+        BankAccount bankAccount = new BankAccount(accId, 10000);
+        Optional<BankAccount> bankAccountOptional = Optional.of(bankAccount);
+        BankAccount expectedBankAccount = new BankAccount(accId, 10000);
+        when(bankAccountStorage.findBankAccountByAccId(any())).thenReturn(bankAccountOptional);
+
+        //when
+        BankAccount result = bankService.getBankAccountInfo(accId);
+
+        //then
+        verify(bankAccountStorage).findBankAccountByAccId(accId);
+        assertThat(result).usingRecursiveComparison().isEqualTo(expectedBankAccount);
+    }
+
+    @Test
+    void shouldNotReturnBankAccountInfo_whenGetBankAccountInfo_givenNonexistentAccountId() {
+        //given
+        String accId = "nonexistent";
+        BankAccount bankAccount = new BankAccount(accId, 10000);
+        Optional<BankAccount> bankAccountOptional = Optional.of(bankAccount);
+        BankAccount expectedBankAccount = new BankAccount(accId, 10000);
+        when(bankAccountStorage.findBankAccountByAccId(any())).thenReturn(bankAccountOptional);
+
+        //when
+        BankAccount result = bankService.getBankAccountInfo(accId);
+
+        //then
+        verify(bankAccountStorage).findBankAccountByAccId(accId);
+        assertThat(result).usingRecursiveComparison().isEqualTo(expectedBankAccount);
+    }
 
 }
