@@ -36,6 +36,14 @@ public class BankService {
         return bankAccountStorage.findBankAccountByAccId(accId);
     }
 
+    /**
+     * Created new transaction, can be used to get and put money
+     * (positive and negative 'amount' parameter)
+     *
+     * @param accId account ID
+     * @param amount amount of money to get/put
+     * @return result {@link Transaction}
+     */
     public Transaction makeNewTransaction(String accId, int amount) {
         Optional<BankAccount> bankAccountOptional = findBankAccountByAccId(accId);
         if (bankAccountOptional.isPresent()) {
