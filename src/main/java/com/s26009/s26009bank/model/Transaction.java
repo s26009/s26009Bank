@@ -5,10 +5,15 @@ public class Transaction {
     private final int amount;
     private final TransactionType type;
 
-    public Transaction(BankAccount bankAccount, int amount, TransactionType type) {
+    public Transaction(BankAccount bankAccount, int amount) {
         this.bankAccount = bankAccount;
         this.amount = amount;
-        this.type = type;
+        if (bankAccount.getSaldo() + amount > 0) {
+            bankAccount.setSaldo(bankAccount.getSaldo() + amount);
+            this.type = TransactionType.ACCEPTED;
+        } else {
+            this.type = TransactionType.DECLINED;
+        }
     }
 
     @Override
