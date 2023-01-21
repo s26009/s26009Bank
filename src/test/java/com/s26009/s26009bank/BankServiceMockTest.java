@@ -27,9 +27,6 @@ class BankServiceMockTest {
     @Mock
     private BankAccountStorage bankAccountStorage;
 
-    @Mock
-    private TransactionStorage TransactionStorage;
-
     @InjectMocks
     private BankService bankService;
 
