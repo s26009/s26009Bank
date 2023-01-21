@@ -1,12 +1,8 @@
 package com.s26009.s26009bank;
 
-import com.s26009.s26009bank.storage.BankAccountStorage;
-import com.s26009.s26009bank.storage.TransactionStorage;
-import org.junit.jupiter.api.BeforeEach;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
-class CarServiceTest {
+class BankServiceTest {
 
 //    private CarService carService;
 //

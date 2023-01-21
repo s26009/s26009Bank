@@ -2,7 +2,6 @@ package com.s26009.s26009bank;
 
 import com.s26009.s26009bank.storage.BankAccountStorage;
 import com.s26009.s26009bank.storage.TransactionStorage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
@@ -10,7 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 
 @SpringBootTest
-public class CarServiceIntegrationTest {
+public class BankServiceIntegrationTest {
 
     @MockBean
     private BankAccountStorage bankAccountStorage;
