@@ -75,10 +75,35 @@ class BankServiceTest {
     @Test
     void shouldFailCreatingNewTransaction_whenMakeNewTransaction_givenNonexistentAccountId() {
         //given
-        String accId = "asdf";
+        String accId = "nonexistent";
 
         //when
         Transaction result = bankService.makeNewTransaction(accId, 5000);
+
+        //then
+        assertThat(result).isNull();
+    }
+
+    @Test
+    void shouldReturnBankAccountInfo_whenGetBankAccountInfo_givenExistingAccountId() {
+        //given
+        String accId = "user1";
+        BankAccount expectedBankAccount = new BankAccount(accId, 10000);
+
+        //when
+        BankAccount result = bankService.getBankAccountInfo(accId);
+
+        //then
+        assertThat(result).usingRecursiveComparison().isEqualTo(expectedBankAccount);
+    }
+
+    @Test
+    void shouldNotReturnBankAccountInfo_whenGetBankAccountInfo_givenNonexistentAccountId() {
+        //given
+        String accId = "nonexistent";
+
+        //when
+        BankAccount result = bankService.getBankAccountInfo(accId);
 
         //then
         assertThat(result).isNull();
