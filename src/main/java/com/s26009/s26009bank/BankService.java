@@ -19,14 +19,16 @@ public class BankService {
         this.transactionStorage = transactionStorage;
     }
 
-    public void registerNewBankAccount(String accId, int amount) {
+    public boolean registerNewBankAccount(String accId, int amount) {
         Optional<BankAccount> bankAccountOptional = findBankAccountByAccId(accId);
         if (bankAccountOptional.isEmpty()) {
             BankAccount newBankAccount = new BankAccount(accId, amount);
             bankAccountStorage.addNewBankAccount(newBankAccount);
             System.out.println("User '" + accId + " is added to storage.");
+            return true;
         } else {
             System.out.println("User ID is already used.");
+            return false;
         }
     }
 
